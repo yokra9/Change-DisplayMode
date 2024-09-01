@@ -16,9 +16,9 @@ $Win32Functions = Add-Type -Name Win32SetDisplayConfig -MemberDefinition $cscode
 
 # Bit values used in the argument 'flags'.
 $SDC_APPLY = 0x00000080
+$SDC_TOPOLOGY_INTERNAL = 0x00000001
 $SDC_TOPOLOGY_CLONE = 0x00000002
 $SDC_TOPOLOGY_EXTEND = 0x00000004
-$SDC_TOPOLOGY_INTERNAL = 0x00000001
 $SDC_TOPOLOGY_EXTERNAL = 0x00000008
 
 # System error codes
@@ -37,10 +37,14 @@ function Switch-DisplayMode {
 
     # Calculate bit values based on arguments
     $action = switch ($DisplayMode) {
+        # Set the last internal configuration from the persistent database
+        "internal" { $SDC_TOPOLOGY_INTERNAL }
         # Set the last clone configuration from the persistence database
         "clone" { $SDC_TOPOLOGY_CLONE }
         # Set the last extend configuration from the persistent database
         "extend" { $SDC_TOPOLOGY_EXTEND }
+        # Set the last external configuration from the persistent database
+        "external" { $SDC_TOPOLOGY_EXTERNAL }
         # Set the last known display configuration of the currently connected monitor
         default { $SDC_TOPOLOGY_INTERNAL -bor $SDC_TOPOLOGY_CLONE -bor $SDC_TOPOLOGY_EXTEND -bor $SDC_TOPOLOGY_EXTERNAL }
     }
